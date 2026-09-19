@@ -1,1 +1,14 @@
-
+{
+  "name": "my-ai-chatbot",
+  "version": "1.0.0",
+  "description": "My personal AI chatbot",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "latest",
+    "express": "latest",
+    "openai": "latest"
+  }
+}
