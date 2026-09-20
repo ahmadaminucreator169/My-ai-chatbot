@@ -68,3 +68,55 @@ button {
   color: white;
   font-size: 16px;
 }
+/* Voice visualizer */
+
+.voice-visualizer {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 55px;
+  height: 40px;
+}
+
+.voice-visualizer span {
+  display: block;
+  width: 5px;
+  height: 8px;
+  background: #333;
+  border-radius: 5px;
+}
+
+.voice-visualizer.active {
+  display: flex;
+}
+
+.voice-visualizer.active span {
+  animation: voiceWave 0.6s infinite ease-in-out;
+}
+
+.voice-visualizer.active span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.voice-visualizer.active span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.voice-visualizer.active span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.voice-visualizer.active span:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes voiceWave {
+  0%, 100% {
+    height: 8px;
+  }
+
+  50% {
+    height: 30px;
+  }
+}
