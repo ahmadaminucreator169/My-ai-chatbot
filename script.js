@@ -3,6 +3,58 @@ const voiceButton = document.getElementById("voice-button");
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
+if (!SpeechRecognition) {
+  voiceButton.textContent = "❌";
+  voiceButton.title = "Voice recognition is not supported in this browser";
+} else {
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  voiceButton.addEventListener("click", () => {
+    try {
+      recognition.start();
+      voiceButton.textContent = "🔴";
+    } catch (error) {
+      console.error("Voice start error:", error);
+    }
+  });
+
+  recognition.onstart = () => {
+    voiceButton.textContent = "🔴";
+    messageInput.placeholder = "Listening...";
+  };
+
+  recognition.onresult = (event) => {
+    const spokenText = event.results[0][0].transcript;
+
+    messageInput.value = spokenText;
+
+    voiceButton.textContent = "🎤";
+    messageInput.placeholder = "Type your message...";
+  };
+
+  recognition.onerror = (event) => {
+    console.error("Voice recognition error:", event.error);
+
+    voiceButton.textContent = "🎤";
+    messageInput.placeholder = "Voice error: " + event.error;
+  };
+
+  recognition.onend = () => {
+    voiceButton.textContent = "🎤";
+
+    if (messageInput.placeholder === "Listening...") {
+      messageInput.placeholder = "Type your message...";
+    }
+  };
+}
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
 if (SpeechRecognition) {
   const recognition = new SpeechRecognition();
 
