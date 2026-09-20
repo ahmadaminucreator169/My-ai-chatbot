@@ -1,11 +1,21 @@
+const chatForm = document.getElementById("chat-form");
+const messageInput = document.getElementById("message-input");
+const messages = document.getElementById("messages");
+
 const voiceButton = document.getElementById("voice-button");
+
+const history = [];
+
+// ================================
+// VOICE RECOGNITION
+// ================================
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (!SpeechRecognition) {
   voiceButton.textContent = "❌";
-  voiceButton.title = "Voice recognition is not supported in this browser";
+  alert("Voice recognition is not supported by this browser.");
 } else {
   const recognition = new SpeechRecognition();
 
@@ -13,21 +23,17 @@ if (!SpeechRecognition) {
   recognition.continuous = false;
   recognition.interimResults = false;
 
-  voiceButton.addEventListener("click", () => {
-    try {
-      recognition.start();
-      voiceButton.textContent = "🔴";
-    } catch (error) {
-      console.error("Voice start error:", error);
-    }
+  voiceButton.addEventListener("click", function () {
+    recognition.start();
+    voiceButton.textContent = "🔴";
   });
 
-  recognition.onstart = () => {
+  recognition.onstart = function () {
     voiceButton.textContent = "🔴";
     messageInput.placeholder = "Listening...";
   };
 
-  recognition.onresult = (event) => {
+  recognition.onresult = function (event) {
     const spokenText = event.results[0][0].transcript;
 
     messageInput.value = spokenText;
@@ -36,14 +42,14 @@ if (!SpeechRecognition) {
     messageInput.placeholder = "Type your message...";
   };
 
-  recognition.onerror = (event) => {
-    console.error("Voice recognition error:", event.error);
+  recognition.onerror = function (event) {
+    console.log("Voice error:", event.error);
 
     voiceButton.textContent = "🎤";
     messageInput.placeholder = "Voice error: " + event.error;
   };
 
-  recognition.onend = () => {
+  recognition.onend = function () {
     voiceButton.textContent = "🎤";
 
     if (messageInput.placeholder === "Listening...") {
@@ -52,52 +58,26 @@ if (!SpeechRecognition) {
   };
 }
 
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (SpeechRecognition) {
-  const recognition = new SpeechRecognition();
-
-  recognition.lang = "en-US";
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  voiceButton.addEventListener("click", () => {
-    recognition.start();
-    voiceButton.textContent = "🔴";
-  });
-
-  recognition.onresult = (event) => {
-    const spokenText = event.results[0][0].transcript;
-    messageInput.value = spokenText;
-    voiceButton.textContent = "🎤";
-  };
-
-  recognition.onerror = () => {
-    voiceButton.textContent = "🎤";
-  };
-
-  recognition.onend = () => {
-    voiceButton.textContent = "🎤";
-  };
-} else {
-  voiceButton.disabled = true;
-  voiceButton.textContent = "❌";
-}
-
-const chatForm = document.getElementById("chat-form");
-const messageInput = document.getElementById("message-input");
-const messages = document.getElementById("messages");
-
-const history = [];
+// ================================
+// DISPLAY MESSAGES
+// ================================
 
 function addMessage(text, sender) {
   const message = document.createElement("div");
-  message.className = sender === "user" ? "user-message" : "bot-message";
+
+  message.className =
+    sender === "user" ? "user-message" : "bot-message";
+
   message.textContent = text;
+
   messages.appendChild(message);
+
   messages.scrollTop = messages.scrollHeight;
 }
+
+// ================================
+// SEND MESSAGE TO AI
+// ================================
 
 chatForm.addEventListener("submit", async function (event) {
   event.preventDefault();
@@ -109,14 +89,17 @@ chatForm.addEventListener("submit", async function (event) {
   }
 
   addMessage(message, "user");
+
   messageInput.value = "";
 
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
+
       headers: {
         "Content-Type": "application/json"
       },
+
       body: JSON.stringify({
         message: message,
         history: history
@@ -143,6 +126,7 @@ chatForm.addEventListener("submit", async function (event) {
 
   } catch (error) {
     console.error(error);
+
     addMessage(
       "Sorry, I could not connect to the AI service.",
       "bot"
