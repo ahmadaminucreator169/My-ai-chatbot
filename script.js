@@ -1,3 +1,38 @@
+const voiceButton = document.getElementById("voice-button");
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  voiceButton.addEventListener("click", () => {
+    recognition.start();
+    voiceButton.textContent = "🔴";
+  });
+
+  recognition.onresult = (event) => {
+    const spokenText = event.results[0][0].transcript;
+    messageInput.value = spokenText;
+    voiceButton.textContent = "🎤";
+  };
+
+  recognition.onerror = () => {
+    voiceButton.textContent = "🎤";
+  };
+
+  recognition.onend = () => {
+    voiceButton.textContent = "🎤";
+  };
+} else {
+  voiceButton.disabled = true;
+  voiceButton.textContent = "❌";
+}
+
 const chatForm = document.getElementById("chat-form");
 const messageInput = document.getElementById("message-input");
 const messages = document.getElementById("messages");
